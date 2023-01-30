@@ -16,7 +16,7 @@ public class ClientPlayer : MonoBehaviour
         
     }
 
-    //アニメーターの操作をするクラス
+    //Control the Animator. Highly depend on the structure of Animator.
     private class AnimatorController
     {
 
