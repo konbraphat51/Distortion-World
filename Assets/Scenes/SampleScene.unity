@@ -391,13 +391,37 @@ MonoBehaviour:
   severalPushesActions:
   - actions:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 8614357519129519002}
+          m_TargetAssemblyTypeName: ClientPlayer, Assembly-CSharp
+          m_MethodName: WalkForward
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     _keyName: W
     _inputType: 0
     _pushesNum: 1
   - actions:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 8614357519129519002}
+          m_TargetAssemblyTypeName: ClientPlayer, Assembly-CSharp
+          m_MethodName: RunForward
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     _keyName: W
     _inputType: 0
     _pushesNum: 2
@@ -599,3 +623,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24bef82a7d8e2b043989a50bc5ed82bd, type: 3}
+--- !u!114 &8614357519129519002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -2166751958845012433, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
+  m_PrefabInstance: {fileID: 409712771145267586}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac92b0bcf0f12e4499570ff5771f25a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

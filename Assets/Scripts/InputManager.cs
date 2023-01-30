@@ -30,6 +30,7 @@ public class InputManager : MonoBehaviour
         //time passed after the latest push
         public float timer = 0f;
 
+        //contructor
         public KeyTimer(string keyName)
         {
             this.keyName = keyName;
