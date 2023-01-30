@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ClientPlayer : MonoBehaviour
 {
     [SerializeField] private float walkingSpeed = 1f;
     [SerializeField] private float runningSpeed = 3f;
-    
+
     public enum State
     {
         Idle,
@@ -66,7 +64,7 @@ public class ClientPlayer : MonoBehaviour
     /// </summary>
     private void Translate(Vector3 velocity)
     {
-        transform.Translate(velocity * Time.deltaTime);
+        transform.position += velocity * Time.deltaTime;
     }
 
     /// <summary>
@@ -106,7 +104,7 @@ public class ClientPlayer : MonoBehaviour
                     switch (movingState)
                     {
                         case MovingState.Walking:
-                            SetValues(0.5f, false, 0f);
+                            SetValues(0.2f, false, 0f);
                             break;
                         case MovingState.Running:
                             SetValues(1f, false, 0f);
