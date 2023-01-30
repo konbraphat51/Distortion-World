@@ -516,6 +516,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -2166751958845012433, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
+      propertyPath: gravitation
+      value: -70
+      objectReference: {fileID: 0}
+    - target: {fileID: -2166751958845012433, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
+      propertyPath: adjusterRadius
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: -2166751958845012433, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
+      propertyPath: minFallingSpeed
+      value: -150
+      objectReference: {fileID: 0}
+    - target: {fileID: -2166751958845012433, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: -2166751958845012433, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
+      propertyPath: groundedCheckerOffset
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2166751958845012433, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
+      propertyPath: groundedCheckerRadius
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 8224645071986927773, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
       propertyPath: m_Name
       value: unitychan
@@ -530,7 +554,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8224645071987094717, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.00000011920929
+      value: 5.681
       objectReference: {fileID: 0}
     - target: {fileID: 8224645071987094717, guid: 9dc65ac8aecb10b4bba181dc230c6d8c, type: 3}
       propertyPath: m_LocalPosition.z
