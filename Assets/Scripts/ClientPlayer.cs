@@ -15,4 +15,10 @@ public class ClientPlayer : MonoBehaviour
     {
         
     }
+
+    //アニメーターの操作をするクラス
+    private class AnimatorController
+    {
+
+    }
 }
