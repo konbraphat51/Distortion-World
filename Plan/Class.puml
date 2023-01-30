@@ -1,0 +1,46 @@
+@startuml
+
+class InputManager{
+    -simpleActions : KeyActions
+    -severalPushesActions : KeyActions
+    -Update() : void
+    -DetectTimes
+}
+
+class KeyAction{
+    -actions : UnityEvent
+    +keyName : string
+    +Invoke() : void
+}
+
+InputManager o- KeyAction
+
+class KeyActionSeveralPushes{
+    -pushesNum : int
+}
+
+KeyAction <|- KeyActionSeveralPushes
+
+class KeyTimer{
+    +keyName : string
+    +pushedNum : int
+    +timer : float
+}
+
+InputManager o- KeyTimer
+
+class ClientPlayer{
+    -state : enum
+    +Move() : void
+    +Rotate() : void
+    +Jump() : void
+}
+
+class AnimatorController{
+    +Update() : void
+    -SetValues() : void
+}
+
+ClientPlayer o- AnimatorController
+
+@enduml

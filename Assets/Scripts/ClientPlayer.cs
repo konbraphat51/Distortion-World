@@ -4,17 +4,8 @@ using UnityEngine;
 
 public class ClientPlayer : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField] private float walkingSpeed = 1f;
+    [SerializeField] private float runningSpeed = 3f;
 
     //Control the Animator. Highly depend on the structure of Animator.
     private class AnimatorController

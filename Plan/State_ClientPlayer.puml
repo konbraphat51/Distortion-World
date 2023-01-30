@@ -1,0 +1,16 @@
+@startuml
+
+[*] -> Idle
+Idle : Just Standing
+
+Idle -> Moving : has input
+Moving : Walking/Running
+Moving -> Idle : doesn't have input
+
+Idle -> Jumping : input
+Moving --> Jumping : input
+
+Jumping -> Idle : doesn't have input
+Jumping -> Moving : has input
+
+@enduml

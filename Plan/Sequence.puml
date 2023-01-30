@@ -1,0 +1,10 @@
+@startuml
+
+participant InputManager
+participant ClientPlayer
+participant AnimatorController
+
+InputManager -> ClientPlayer : Invoke UnityEvent
+ClientPlayer -> AnimatorController : Gives parameters
+
+@enduml
