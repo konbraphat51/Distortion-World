@@ -120,6 +120,15 @@ public class ClientPlayer : MonoBehaviour
         RotateHorizontally(-angularSpeed);
     }
 
+    //callled by InputManager
+    public void Jump()
+    {
+        if ((state == State.Idle) || (state == State.Moving))
+        {
+            verticalSpeed = Mathf.Sqrt(2 * Mathf.Abs(gravitation) * jumpHeight);
+        }
+    }
+
     /// <summary>
     /// Move position (not rotating)
     /// </summary>
@@ -174,6 +183,13 @@ public class ClientPlayer : MonoBehaviour
     /// </summary>
     private bool CheckGrounded()
     {
+        //don't land when going up
+        if (verticalSpeed > 0)
+        {
+            ChangeState(State.Jumping);
+            return false;
+        }
+
         bool grounded = Physics.CheckSphere(
                             GetGroundedCheckerPosition(),
                             groundedCheckerRadius,

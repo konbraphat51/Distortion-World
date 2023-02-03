@@ -3353,8 +3353,8 @@ MonoBehaviour:
   walkingSpeed: 1
   runningSpeed: 3
   angularSpeed: 90
-  jumpHeight: 10
-  gravitation: -70
+  jumpHeight: 3
+  gravitation: -30
   minFallingSpeed: -150
   groundedCheckerRadius: 0.3
   groundedCheckerOffset: 0
