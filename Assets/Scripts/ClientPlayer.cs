@@ -11,6 +11,7 @@ public class ClientPlayer : MonoBehaviour
     [Header("Physical consts")]
     [SerializeField] private float walkingSpeed = 1f;
     [SerializeField] private float runningSpeed = 3f;
+    [SerializeField] private float angularSpeed = 90f;
     [SerializeField] private float jumpHeight = 10f;
     [Tooltip("Gravitational Acceleration")]
     [SerializeField] private float gravitation = -0.5f;
@@ -107,12 +108,36 @@ public class ClientPlayer : MonoBehaviour
         animatorController.movingState = AnimatorController.MovingState.Running;
     }
 
+    //Called by InputManager
+    public void TurnRight()
+    {
+        RotateHorizontally(angularSpeed);
+    }
+
+    //Called by InputManager
+    public void TurnLeft()
+    {
+        RotateHorizontally(-angularSpeed);
+    }
+
     /// <summary>
     /// Move position (not rotating)
     /// </summary>
     private void Translate(Vector3 velocity)
     {
         transform.position += velocity * Time.deltaTime;
+    }
+
+    /// <summary>
+    /// Turn left or right
+    /// </summary>
+    private void RotateHorizontally(float angularSpeed)
+    {
+        float angle = angularSpeed * Time.deltaTime;
+
+        Quaternion rotation = Quaternion.AngleAxis(angle, transform.up);
+
+        transform.rotation = Quaternion.AngleAxis(angle, transform.up) * transform.rotation;
     }
 
     /// <summary>

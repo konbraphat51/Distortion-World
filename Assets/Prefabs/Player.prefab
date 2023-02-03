@@ -3350,6 +3350,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac92b0bcf0f12e4499570ff5771f25a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  walkingSpeed: 1
+  runningSpeed: 3
+  angularSpeed: 90
+  jumpHeight: 10
+  gravitation: -70
+  minFallingSpeed: -150
+  groundedCheckerRadius: 0.3
+  groundedCheckerOffset: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  adjusterRadius: 0.05
 --- !u!1 &8224645071986927775
 GameObject:
   m_ObjectHideFlags: 0
