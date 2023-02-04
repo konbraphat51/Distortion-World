@@ -11,10 +11,10 @@ using UnityEngine.Events;
 public class InputManager : SingletonMonoBehaviour<InputManager>
 {
     //Simply push
-    [SerializeField] private KeyAction[] simpleActions;
+    [SerializeField] private List<KeyAction> simpleActions;
 
     //Actions require several pushes (including single)
-    [SerializeField] private KeyActionSeveralPushes[] severalPushesActions;
+    [SerializeField] private List<KeyActionSeveralPushes> severalPushesActions;
 
     [Tooltip("longest interval of several pushes(s)")]
     [SerializeField] private float pushesInterval = 0.3f;
@@ -69,6 +69,31 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     //keys has severalPushesActions
     private List<string> severalPushesKeys = new List<string>();
 
+    //remember non-permanent (registered by script) actions
+    public List<NonPermanentAction> nonPermanentActions = new List<NonPermanentAction>();
+
+    //for remember action added by scripts
+    public class NonPermanentAction
+    {
+        public UnityAction action { private set; get; }
+        public bool isSimple { private set; get; }
+        public KeyAction.InputType inputType { private set; get; }
+        public string keyName { private set; get; }
+        public int pushesNum { private set; get; } = 1;
+        public bool dontWait { private set; get; }
+
+        //constructor
+        public NonPermanentAction(string keyName, UnityAction action, KeyAction.InputType inputType = KeyAction.InputType.GetKey, bool isSimple = true, int pushesNum = 1, bool dontWait = false)
+        {
+            this.action = action;
+            this.isSimple = isSimple;
+            this.inputType = inputType;
+            this.keyName = keyName;
+            this.pushesNum = pushesNum;
+            this.dontWait = dontWait;
+        }
+    }
+
     private void Start()
     {
         InitializeSeveralPushesKeys();
@@ -80,6 +105,154 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     {
         UpdateKeys();
         RunActions();        
+    }
+
+    /// <summary>
+    /// Push by functions
+    /// ex) for EventTrigger
+    /// </summary>
+    public static void Push(string keyName)
+    {
+        Instance.functionPushed.Add(keyName);
+    }
+
+    /// <summary>
+    /// Register method by script
+    /// </summary>
+    /// <returns>return registered action. Use this to unregister</returns>
+    public static NonPermanentAction RegisterAction(string keyName, 
+        UnityAction action, 
+        KeyAction.InputType inputType = KeyAction.InputType.GetKey, 
+        bool isSimple = true, 
+        int pushesNum = 1,
+        bool dontWait = false)
+    {
+        //make class
+        NonPermanentAction nonPermanentAction
+            = new NonPermanentAction(keyName, action, inputType, isSimple, pushesNum);
+
+        if (isSimple)
+        {
+            //simple actions
+
+            //find if already has key
+            bool found = false;
+            for(int cnt = 0; cnt < Instance.simpleActions.Count(); cnt++)
+            {
+                if ((Instance.simpleActions[cnt].keyName == keyName)
+                    && (Instance.simpleActions[cnt].inputType == inputType))
+                {
+                    //found
+                    //register
+                    Instance.simpleActions[cnt].AddListener(action);
+                    
+                    found = true;
+                    break;
+                }
+            }
+
+            //not found
+            if (!found)
+            {
+                //register new key
+                KeyAction newKeyAction = new KeyAction(new UnityEvent(), keyName, inputType);
+                newKeyAction.AddListener(action);
+                Instance.simpleActions.Add(newKeyAction);
+
+                //add the new key
+                Instance.UpdateIsPushedIndex();
+            }
+        }
+        else
+        {
+            //several pushes
+
+            //find if already has key
+            bool found = false;
+            for (int cnt = 0; cnt < Instance.severalPushesActions.Count(); cnt++)
+            {
+                if ((Instance.severalPushesActions[cnt].keyName == keyName)
+                        &&(Instance.severalPushesActions[cnt].inputType == inputType)
+                        &&(Instance.severalPushesActions[cnt].dontWait == dontWait)
+                        &&(Instance.severalPushesActions[cnt].pushesNum == pushesNum))
+                {
+                    //found
+                    //register
+                    Instance.severalPushesActions[cnt].AddListener(action);
+
+                    found = true;
+                    break;
+                }
+            }
+
+            //not found
+            if (!found)
+            {
+                //register new key
+                KeyAction newKeyAction = new KeyActionSeveralPushes(new UnityEvent(), keyName, pushesNum, inputType, dontWait);
+                newKeyAction.AddListener(action);
+                Instance.simpleActions.Add(newKeyAction);
+
+                //add the new key
+                Instance.UpdateIsPushedIndex();
+            }
+        }
+
+        //return registered action
+        return nonPermanentAction;
+    }
+
+    /// <summary>
+    /// Unregister action
+    /// </summary>
+    /// <param name="nonPermanentAction">What you want to remove. You got this when you used RegisterAction()</param>
+    /// <returns>false if there was no corresponding action</returns>
+    public static bool RemoveAction(NonPermanentAction nonPermanentAction)
+    {
+        if (nonPermanentAction.isSimple)
+        {
+            //simple actions
+
+            //find corresponding action
+            for (int cnt = 0; cnt < Instance.simpleActions.Count(); cnt++)
+            {
+                if ((Instance.simpleActions[cnt].keyName == nonPermanentAction.keyName)
+                    && (Instance.simpleActions[cnt].inputType == nonPermanentAction.inputType))
+                {
+                    //found
+                    //remove
+                    Instance.simpleActions[cnt].RemoveListener(nonPermanentAction.action);
+
+                    return true;
+                }
+            }
+
+            //not found
+            return false;
+        }
+        else
+        {
+            //several pushes
+
+            //find corresponding action
+            for (int cnt = 0; cnt < Instance.severalPushesActions.Count(); cnt++)
+            {
+                if ((Instance.severalPushesActions[cnt].keyName == nonPermanentAction.keyName)
+                        && (Instance.severalPushesActions[cnt].inputType == nonPermanentAction.inputType)
+                        && (Instance.severalPushesActions[cnt].dontWait == nonPermanentAction.dontWait)
+                        && (Instance.severalPushesActions[cnt].pushesNum == nonPermanentAction.pushesNum))
+                {
+                    //found
+                    //register
+                    Instance.severalPushesActions[cnt].RemoveListener(nonPermanentAction.action);
+
+                    return true;
+                }
+            }
+
+            //not found
+            return false;
+        }
     }
 
     /// <summary>
@@ -125,15 +298,6 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     }
 
     /// <summary>
-    /// Push by functions
-    /// ex) for EventTrigger
-    /// </summary>
-    public static void Push(string keyName)
-    {
-        Instance.functionPushed.Add(keyName);
-    }
-
-    /// <summary>
     /// Run actions if pushed
     /// </summary>
     private void RunActions()
@@ -156,21 +320,21 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             //correspond to input type
             switch (keyAction.inputType)
             {
-                case KeyAction.KeyType.GetKey:
+                case KeyAction.InputType.GetKey:
                     //Invoke during pushed
                     if(GetKey(keyAction.keyName)){
                         keyAction.Invoke();
                     }
                     break;
 
-                case KeyAction.KeyType.GetKeyDown:
+                case KeyAction.InputType.GetKeyDown:
                     //Invoke right on the time of pushed
                     if(GetKeyDown(keyAction.keyName)){
                         keyAction.Invoke();
                     }
                     break;
 
-                case KeyAction.KeyType.GetKeyUp:
+                case KeyAction.InputType.GetKeyUp:
                     //Invoke right on the time key up
                     if (GetKeyUp(keyAction.keyName))
                     {
@@ -198,32 +362,19 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
                 keyTimer.timer = 0f;
 
                 ////run immedietly
-                KeyActionSeveralPushes correspondingAction = GetSeveralPushesAction(keyName, keyTimer.pushedNum);
-                //if exists and dont wait
-                if (correspondingAction != null && correspondingAction.dontWait)
+                //find corresponding action               
+                foreach (KeyActionSeveralPushes keyAction in severalPushesActions)
                 {
-                    runningActions.Add(correspondingAction);
+                    if ((keyAction.keyName == keyName)
+                        && (keyAction.pushesNum == keyTimer.pushedNum)
+                        && (keyAction.dontWait == true))
+                    {
+                        //found
+                        runningActions.Add(keyAction);
+                    }
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    private KeyActionSeveralPushes GetSeveralPushesAction(string keyName, int pushesNum)
-    {
-        foreach(KeyActionSeveralPushes keyAction in severalPushesActions)
-        {
-            if ((keyAction.keyName == keyName) && (keyAction.pushesNum == pushesNum))
-            {
-                //found
-                return keyAction;
-            }
-        }
-
-        //couldn't find
-        return null;
     }
 
     /// <summary>
@@ -266,6 +417,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             {
                 //exceeded
 
+                //actoins with more key priors
                 //get rid of same key action if exists
                 List<KeyActionSeveralPushes> _runningActions
                     = new List<KeyActionSeveralPushes>(runningActions);
@@ -309,7 +461,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         {
             switch (action.inputType)
             {
-                case KeyAction.KeyType.GetKey:
+                case KeyAction.InputType.GetKey:
                     //invoke while pushed
                     if (GetKey(action.keyName))
                     {
@@ -322,13 +474,13 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
                     }
                     break;
 
-                case KeyAction.KeyType.GetKeyDown:
+                case KeyAction.InputType.GetKeyDown:
                     //run immedietly
                     action.Invoke();
                     runningActions.Remove(action);
                     break;
 
-                case KeyAction.KeyType.GetKeyUp:
+                case KeyAction.InputType.GetKeyUp:
                     //run when up
                     //not using GetKeyUp because of possibility of
                     //key up during waiting for keyTimer
@@ -448,7 +600,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     /// </summary>
     [System.Serializable] public class KeyAction
     {
-        public enum KeyType
+        public enum InputType
         {
             GetKey,
             GetKeyDown,
@@ -462,7 +614,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         [SerializeField] private string _keyName;
 
         [Tooltip("0:GetKey, 1:GetKeyDown, 2:GetKeyUp")]
-        [SerializeField] private KeyType _inputType = 0;
+        [SerializeField] private InputType _inputType = 0;
         
         //getters. These are necessary for SerializeField
         public string keyName
@@ -473,7 +625,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             }
         }
 
-        public KeyType inputType
+        public InputType inputType
         {
             get
             {
@@ -489,12 +641,36 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             }
         }
 
+        //constructor
+        public KeyAction(UnityEvent actions, string keyName, InputType inputType = InputType.GetKey)
+        {
+            this._actions = actions;
+            this._keyName = keyName;
+            this._inputType = inputType;
+        }
+
         /// <summary>
         /// Simply invoke the registered UnityActions
         /// </summary>
         public void Invoke()
         {
             actions.Invoke();
+        }
+
+        /// <summary>
+        /// AddListener to UnityEvent
+        /// </summary>
+        public void AddListener(UnityAction action)
+        {
+            _actions.AddListener(action);
+        }
+
+        /// <summary>
+        /// RemoveListener to UnityEvent
+        /// </summary>
+        public void RemoveListener(UnityAction action)
+        {
+            _actions.RemoveListener(action);
         }
     }
 
@@ -525,6 +701,14 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             {
                 return _dontWait;
             }
+        }
+
+        //contructor
+        public KeyActionSeveralPushes(UnityEvent actions, string keyName, int pushesNum, InputType inputType = InputType.GetKey, bool dontWait = false)
+            : base(actions, keyName, inputType)
+        {
+            this._pushesNum = pushesNum;
+            this._dontWait = dontWait;
         }
     }
 }
