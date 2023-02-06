@@ -22,9 +22,13 @@ public class ClientPlayer : MonoBehaviour
     [SerializeField] private float groundedCheckerOffset = -1f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Normal Detector")]
+    [SerializeField] private NormalDetector normalDetector;
+
     [Header("Adjusting Ground")]
     [Tooltip("The max vertical distance of player from the ground")]
     [SerializeField] private float adjusterRadius = 0.1f;
+    [SerializeField] private float adjusterOffset = 0f;
 
     public enum State
     {
@@ -66,6 +70,8 @@ public class ClientPlayer : MonoBehaviour
 
         //update animation
         animatorController.Update(state);
+
+        AdjustAngle();
     }
 
     /// <summary>
@@ -150,6 +156,23 @@ public class ClientPlayer : MonoBehaviour
     }
 
     /// <summary>
+    /// Adjust character's angle from normaldetector
+    /// </summary>
+    private void AdjustAngle()
+    {
+        //get normal
+        Vector3 normal = normalDetector.detectedNormal;
+
+        //get difference from current rotation
+        Quaternion difference = Quaternion.FromToRotation(
+            transform.up,
+            normal);
+
+        //rotate
+        transform.rotation = difference * transform.rotation;
+    }
+
+    /// <summary>
     /// Check if in air or not
     /// And get gravity
     /// </summary>
@@ -218,34 +241,30 @@ public class ClientPlayer : MonoBehaviour
     /// </summary>
     private void AdjustGround()
     {
-        Vector3 initialFootPosition = GetGroundedCheckerPosition();
+        Vector3 groundCheckerPosition = GetGroundedCheckerPosition();
 
-        float optimalZ = 0f;
+        Vector3 adjustedPosition = new Vector3();    
 
         //start from the edge to the other edge of the GroundChecker
-        for(float z = -groundedCheckerRadius; z <= groundedCheckerRadius; z += adjusterRadius)
+        for (float z = -groundedCheckerRadius; z <= groundedCheckerRadius; z += adjusterRadius)
         {
-            Vector3 adjustedPosition
-                = initialFootPosition + transform.up * z;
+            adjustedPosition = groundCheckerPosition + transform.up * z;
 
             //Use the adjuster
-            bool collided
-                = Physics.CheckSphere(
-                        adjustedPosition,
-                        adjusterRadius,
-                        groundLayer
-                    );
+            bool collided = Physics.CheckSphere(
+                                adjustedPosition,
+                                adjusterRadius,
+                                groundLayer);
 
             if (collided)
             {
                 //adjust completed
-                optimalZ = z;
                 break;
             }
         }
 
         //Adjust the position
-        transform.position += transform.up * optimalZ;
+        transform.position = adjustedPosition - transform.up*adjusterOffset;
     }
 
     //for debugging grounded checker
@@ -257,12 +276,17 @@ public class ClientPlayer : MonoBehaviour
 
         //show adjuster
         Gizmos.color = new Color(0, 0, 1, 1f);
-        Gizmos.DrawSphere(GetGroundedCheckerPosition(), adjusterRadius);
+        Gizmos.DrawSphere(GetAdjusterPosition(), adjusterRadius);
     }
 
     private Vector3 GetGroundedCheckerPosition()
     {
         return transform.position + transform.up.normalized * groundedCheckerOffset;
+    }
+
+    private Vector3 GetAdjusterPosition()
+    {
+        return transform.position + transform.up.normalized * adjusterOffset;
     }
 
     /// <summary>

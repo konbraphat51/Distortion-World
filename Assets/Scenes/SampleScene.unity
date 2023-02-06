@@ -479,6 +479,7 @@ MonoBehaviour:
     _pushesNum: 2
     _dontWait: 1
   pushesInterval: 0.2
+  buttonsInterpretations: []
 --- !u!4 &1390177553
 Transform:
   m_ObjectHideFlags: 0
